@@ -49,7 +49,7 @@ onMounted(() => {
         ],
         resetOnSubmit: false,
         onSubmit: async () => {
-            const res = await axios.post('http://127.0.0.1:8000/api/admin/login', {
+            const res = await axios.post(import.meta.env.VITE_API_URL + '/admin/login', {
                 user: login.value,
                 password: password.value,
             });

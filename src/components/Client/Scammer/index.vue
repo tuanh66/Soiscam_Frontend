@@ -127,7 +127,7 @@ function formatDate(dateStr) {
     return `${day}/${month}/${year}`;
 }
 
-const getDataAll = "http://127.0.0.1:8000/api/client/data-report-all";
+const getDataToday = import.meta.env.VITE_API_URL + "/client/data-report-all";
 const loadData = ref([]);
 const countData = ref(0);
 const isModalOpen = ref(false);

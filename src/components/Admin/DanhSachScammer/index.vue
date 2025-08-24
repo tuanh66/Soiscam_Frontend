@@ -180,7 +180,7 @@ function closeModal() {
 onMounted(async () => {
     try {
         const token = localStorage.getItem("token");
-        const res = await axios.get('http://127.0.0.1:8000/api/admin/data-report-approve-1', {
+        const res = await axios.get(import.meta.env.VITE_API_URL + '/admin/data-report-approve-1', {
             headers: {
                 Authorization: "Bearer " + token,
             }
