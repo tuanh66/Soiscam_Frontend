@@ -1,0 +1,9 @@
+/* @tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .btn {
+    @apply py-[12px] px-[20px] rounded-[12px] bg-[var(--gradientColor)] text-[var(--textBtnColor)];
+  }
+} */

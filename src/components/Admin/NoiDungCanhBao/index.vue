@@ -1,0 +1,54 @@
+<template>
+    <div class="flex justify-between items-center">
+        <div class="flex items-center gap-2">
+            <h2 class="font-bold text-[24px]">Danh sách cảnh báo</h2>
+            <p class="text-[16px] text-[var(--subTextColor)] font-semibold">(Có 0 cảnh báo)</p>
+        </div>
+        <button class="btn ml-[20px]" type="submit">
+            <span><i class="fa soloid fa-plus"></i></span>
+            <span> Thêm cảnh báo</span>
+        </button>
+        <form
+            class="max-w-[500px] w-full mr-0 mt-0 rounded-[16px] bg-[var(--bgColor3)] border border-[rgba(255,255,255,0.1)] flex items-center p-[5px] mx-auto">
+            <input type="text" placeholder="Kiểm tra số tài khoản ngân hàng..."
+                class="flex-1 bg-transparent border-none outline-none pl-[19px] text-[var(--textColor)]">
+            <button class="btn">
+                <img src="../../../assets/img/search-icon.svg" alt="" class="block md:hidden">
+                <span class="hidden md:block">Tìm Kiếm</span>
+            </button>
+        </form>
+    </div>
+    <div class="mt-[50px] text-[14px]">
+        <table class="w-full overflow-hidden rounded-[16px] border-spacing-0">
+            <thead class="bg-[var(--bgColor3)]">
+                <tr>
+                    <th class="p-[16px] text-left">id</th>
+                    <th class="p-[16px] text-left">Tiêu đề cảnh báo</th>
+                    <th class="p-[16px] text-left">Nội dung cảnh báo</th>
+                    <th class="p-[16px] text-left"></th>
+                </tr>
+            </thead>
+            <tbody class="">
+                <tr class="dashboard__table-bodyItem">
+                    <td class="align-middle p-[16px]">#1</td>
+                    <td class="align-middle p-[16px]">Tiêu đề cảnh báo 1</td>
+                    <td class="align-middle p-[16px]">Nội dung cảnh báo 1</td>
+                    <td class="align-middle p-[16px] flex items-center gap-[12px]">
+                        <span class="cursor-pointer text-[18px]">
+                            <i class="fa-solid fa-eye"></i>
+                        </span>
+                        <span class="cursor-pointer text-[18px] text-[var(--redColor)]">
+                            <i class="fa-solid fa-trash"></i>
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</template>
+<script>
+export default {
+
+}
+</script>
+<style></style>
