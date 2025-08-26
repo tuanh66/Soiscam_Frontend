@@ -21,7 +21,7 @@ import { computed } from 'vue';
 const route = useRoute();
 
 // Danh sách các route muốn ẩn container
-const hideContainerRoutes = ['/gui-to-cao'];
+const hideContainerRoutes = ['/gui-to-cao', '/gioi-thieu'];
 
 const isHideContainer = computed(() => hideContainerRoutes.includes(route.path));
 </script>
