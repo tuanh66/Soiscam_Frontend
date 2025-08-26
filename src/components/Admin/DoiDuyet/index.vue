@@ -207,7 +207,7 @@ async function approveReport(id, approve) {
 
         if (!confirm.isConfirmed) return;
 
-        const res = await axios.post(import.meta.env.VITE_API_URL + '/admin/update-report-approve-1', {
+        const res = await axios.post('http://127.0.0.1:8000/api/admin/update-report-approve-1', {
             id: id,
             approve: approve
         });

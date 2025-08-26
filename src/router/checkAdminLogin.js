@@ -3,7 +3,7 @@ import axios from "axios";
 export default function (to, from, next) {
   var token = localStorage.getItem("token");
   axios
-    .get(import.meta.env.VITE_API_URL + "/admin/check-token", {
+    .get("http://127.0.0.1:8000/api/admin/check-token", {
       headers: {
         Authorization: "Bearer " + token,
       },

@@ -104,7 +104,7 @@
 import axios from 'axios';
 import { onMounted, ref } from 'vue';
 
-const endpointPost = import.meta.env.VITE_API_URL + "/create-report-approve-0";
+const endpointPost = "http://127.0.0.1:8000/api/create-report-approve-0";
 const apiKey = "077260bcdf4213fee248304680f0e781";
 const uploadedImages = ref([]);
 // handle auto resize contentReport
