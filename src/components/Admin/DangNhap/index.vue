@@ -63,19 +63,5 @@ onMounted(() => {
         }
     });
 });
-
-// const handleLogin = async () => {
-//     const res = await axios.post('http://127.0.0.1:8000/api/admin/login', {
-//         user: login.value,
-//         password: password.value
-//     });
-//     if (res.data.status) {
-//         localStorage.setItem('user_login', res.data.token);
-//         FuiToast.success(res.data.message);
-//         router.push('/admin/danh-sach-scammer');
-//     } else {
-//         FuiToast.error(res.data.message);
-//     }
-// };
 </script>
 <style></style>

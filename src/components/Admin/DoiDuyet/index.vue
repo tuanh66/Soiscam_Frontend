@@ -181,10 +181,9 @@ function closeModal() {
 
 onMounted(async () => {
     try {
-        const token = localStorage.getItem("token");
         const res = await axios.get('http://127.0.0.1:8000/api/admin/data-report-approve-0', {
             headers: {
-                Authorization: "Bearer " + token,
+                Authorization: "Bearer " + localStorage.getItem('token'),
             }
         });
         loadData.value = res.data.data;
@@ -206,11 +205,16 @@ async function approveReport(id, approve) {
         });
 
         if (!confirm.isConfirmed) return;
-
-        const res = await axios.post('http://127.0.0.1:8000/api/admin/update-report-approve-1', {
-            id: id,
-            approve: approve
-        });
+        const res = await axios.post('http://127.0.0.1:8000/api/admin/update-report-approve-1',
+            {
+                id: id,
+                approve: approve,
+            },
+            {
+                headers: {
+                    Authorization: "Bearer " + localStorage.getItem("token"),
+                }
+            });
 
         Swal.fire({
             icon: 'success',
@@ -246,7 +250,13 @@ async function deleteReport(id) {
 
     if (result.isConfirmed) {
         try {
-            const res = await axios.post('http://127.0.0.1:8000/api/admin/delete-report', { id })
+            const res = await axios.post('http://127.0.0.1:8000/api/admin/delete-report', { id },
+                {
+                    headers: {
+                        Authorization: "Bearer " + localStorage.getItem("token"),
+                    }
+                }
+            );
             Swal.fire('Đã xoá thành công!', res.data.message, 'success')
 
             loadData.value = loadData.value.filter(item => item.id !== id)

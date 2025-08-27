@@ -205,7 +205,13 @@ async function deleteReport(id) {
 
     if (result.isConfirmed) {
         try {
-            const res = await axios.post('http://127.0.0.1:8000/api/admin/delete-report', { id })
+            const res = await axios.post('http://127.0.0.1:8000/api/admin/delete-report', { id },
+                {
+                    headers: {
+                        Authorization: "Bearer " + localStorage.getItem("token"),
+                    }
+                }
+            )
             Swal.fire('Đã xoá thành công!', res.data.message, 'success')
 
             loadData.value = loadData.value.filter(item => item.id !== id)

@@ -50,7 +50,7 @@
                 <h2 class="font-semibold text-[20px]">{{ headerTitle }}</h2>
                 <div class="flex items-center gap-[8px] cursor-pointer relative">
                     <img src="../../../assets/img/avatar-2.svg" alt="admin avatar">
-                    <span class="headerAdmin__name">Admin</span>
+                    <span class="headerAdmin__name">{{ ho_ten }}</span>
                     <span class="headerAdmin__icon">
                         <i class="fa-solid fa-angle-down"></i>
                     </span>
@@ -64,10 +64,11 @@
 </template>
 <script setup>
 import { useRoute } from 'vue-router';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 // Active menu
 const route = useRoute();
 const menuHeaderActive = (path) => route.path === path;
+const ho_ten = ref(localStorage.getItem('ho_ten') || 'Admin');
 
 // Tiêu đề theo route
 const headerTitle = computed(() => {
