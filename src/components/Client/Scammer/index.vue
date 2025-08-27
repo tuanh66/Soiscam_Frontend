@@ -160,7 +160,7 @@ function closeModal() {
 
 onMounted(async () => {
     try {
-        const res = await axios.get(getDataAll);
+        const res = await axios.get(getDataToday);
         loadData.value = res.data.data;
         countData.value = loadData.value.length;
     } catch (error) {
