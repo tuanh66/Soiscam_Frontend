@@ -39,6 +39,13 @@ const login = ref('');
 const password = ref('');
 
 onMounted(() => {
+    // Kiểm tra token khi load trang login
+    const token = localStorage.getItem("token");
+    if (token) {
+        router.push("/admin/danh-sach-scammer");
+        return; // không cho chạy tiếp form nữa
+    }
+
     Validator({
         form: "#form-login",
         formGroupSelector: ".form__group",
@@ -49,7 +56,7 @@ onMounted(() => {
         ],
         resetOnSubmit: false,
         onSubmit: async () => {
-            const res = await axios.post('http://127.0.0.1:8000/api/admin/login', {
+            const res = await axios.post(`${import.meta.env.VITE_API_URL}/admin/login`, {
                 user: login.value,
                 password: password.value,
             });

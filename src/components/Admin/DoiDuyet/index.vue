@@ -181,7 +181,7 @@ function closeModal() {
 
 onMounted(async () => {
     try {
-        const res = await axios.get('http://127.0.0.1:8000/api/admin/data-report-approve-0', {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/admin/data-report-approve-0`, {
             headers: {
                 Authorization: "Bearer " + localStorage.getItem('token'),
             }
@@ -205,7 +205,7 @@ async function approveReport(id, approve) {
         });
 
         if (!confirm.isConfirmed) return;
-        const res = await axios.post('http://127.0.0.1:8000/api/admin/update-report-approve-1',
+        const res = await axios.post(`${import.meta.env.VITE_API_URL}/admin/update-report-approve-1`,
             {
                 id: id,
                 approve: approve,
@@ -250,7 +250,7 @@ async function deleteReport(id) {
 
     if (result.isConfirmed) {
         try {
-            const res = await axios.post('http://127.0.0.1:8000/api/admin/delete-report', { id },
+            const res = await axios.post(`${import.meta.env.VITE_API_URL}/admin/delete-report`, { id },
                 {
                     headers: {
                         Authorization: "Bearer " + localStorage.getItem("token"),
