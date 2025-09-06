@@ -1,1 +1,17 @@
 @import "tailwindcss";
+
+.fui-toast .fui-toast-box {
+  position: relative;
+  flex-direction: column;
+  pointer-events: auto;
+  min-width: 200px;
+  max-width: 450px;
+  background-color: #fff;
+  color: #000;
+  border-radius: 8px;
+  line-height: 1.5;
+  padding: 16px;
+  will-change: transform;
+  box-shadow: 0 10px 15px -3px rgba(27, 27, 27, 0.1),
+    0 4px 6px -4px rgba(27, 27, 27, 0.1);
+}

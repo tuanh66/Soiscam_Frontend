@@ -1,4 +1,5 @@
 <template>
+    <div id="fui-toast"></div> 
     <form id="form-login" action="" class="flex flex-col justify-center text-center mx-auto pt-30 px-4 w-90">
         <!-- <input type="hidden" name="_token" value=""> -->
         <div class="flex items-end justify-center gap-[6px] mt-[40px] mb-4">
