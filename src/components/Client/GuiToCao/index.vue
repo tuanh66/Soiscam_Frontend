@@ -55,7 +55,7 @@
                     @click="removeImage(img)">
                     <img src="../../../assets/img/close-icon.svg" alt="close" />
                 </div>
-                <img :src="img" alt="" class="form__preview-img w-full h-full object-cover" />
+                <img :src="img.preview" alt="" class="form__preview-img w-full h-full object-cover" />
             </div>
             <div
                 class="form__group form__upload-group flex flex-col gap-[8px] flex-1 relative max-w-[128px] w-full h-[114px] rounded-[8px] bg-[var(--bgColor3)]">
@@ -105,8 +105,8 @@ import axios from 'axios';
 import { onMounted, ref } from 'vue';
 
 const endpointPost = `${import.meta.env.VITE_API_URL}/client/create-report-approve-0`;
-const apiKey = "077260bcdf4213fee248304680f0e781";
 const uploadedImages = ref([]);
+
 // handle auto resize contentReport
 onMounted(() => {
     const contentReportInput = document.getElementById("contentReport");
@@ -157,54 +157,54 @@ onMounted(() => {
         resetOnSubmit: true,
         onSubmit: async ({ images, ...rest }) => {
             try {
-                await axios.post(endpointPost, {
-                    imagesProof: uploadedImages.value,
-                    date: new Date(),
-                    ...rest,
+                const formData = new FormData();
+
+                // append các field text
+                Object.entries(rest).forEach(([key, value]) => {
+                    formData.append(key, value);
                 });
+
+                // append file ảnh
+                uploadedImages.value.forEach((img) => {
+                    formData.append("imagesProof[]", img.file);
+                });
+
+                // gửi request
+                await axios.post(endpointPost, formData, {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                });
+
                 uploadedImages.value = [];
                 FuiToast.success("Gửi đơn thành công!");
             } catch (error) {
-                // console.error(error);
+                console.error(error);
                 FuiToast.error("Lỗi đơn!");
             }
         },
     });
 });
 
-// upload imgbb
-async function uploadImgBB(file) {
-    const formData = new FormData();
-    formData.append("image", file);
-    try {
-        const response = await fetch(
-            `https://api.imgbb.com/1/upload?key=${apiKey}`,
-            {
-                method: "POST",
-                body: formData,
-            }
-        );
-        const data = await response.json();
-        return data.data.url;
-    } catch (error) {
-        console.error("Upload lỗi:", error);
-        return null;
-    }
-}
-
-// handle upload ảnh
-async function handleUpload(event) {
+function handleUpload(event) {
     const files = event.target.files;
     if (!files.length) return;
+
     for (let file of files) {
-        const url = await uploadImgBB(file);
-        if (url) uploadedImages.value.push(url);
+        if (file.type.startsWith("image/")) {
+            uploadedImages.value.push({
+                file,
+                preview: URL.createObjectURL(file) // ✅ preview tạm
+            });
+        }
     }
-    event.target.value = ""; // reset input file
+
+    event.target.value = ""; // reset input
 }
 
-function removeImage(url) {
-    uploadedImages.value = uploadedImages.value.filter((img) => img !== url);
+function removeImage(img) {
+    uploadedImages.value = uploadedImages.value.filter((item) => item.preview !== img.preview);
+    URL.revokeObjectURL(img.preview); // ✅ giải phóng bộ nhớ
 }
 </script>
 <style></style>
