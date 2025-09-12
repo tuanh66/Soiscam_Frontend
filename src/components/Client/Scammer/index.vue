@@ -1,7 +1,7 @@
 <template>
-    <form
+    <form @submit.prevent="handleSearch"
         class="max-w-[500px] w-full rounded-[16px] bg-[var(--bgColor3)] border border-[rgba(255,255,255,0.1)] mt-15 flex items-center p-[5px] mx-auto">
-        <input type="text" placeholder="Kiểm tra số tài khoản ngân hàng..."
+        <input type="text" placeholder="Kiểm tra số tài khoản ngân hàng..." v-model="keyword"
             class="flex-1 bg-transparent border-none outline-none pl-[19px] text-[var(--textColor)]">
         <button class="btn">
             <img src="../../../assets/img/search-icon.svg" alt="" class="block lg:hidden">
@@ -35,7 +35,9 @@
             </ul>
             <div v-else class="not-found">
                 <img src="../../../assets/img/not-found.svg">
-                <span>Hôm nay không có đơn nào</span>
+                <span>
+                    {{ isSearching && !loadData.length ? 'Không có dữ liệu bạn cần tìm' : 'Không có dữ liệu' }}
+                </span>
             </div>
         </div>
     </section>
@@ -117,7 +119,21 @@
 import axios from 'axios';
 import lightGallery from 'lightgallery';
 import lgThumbnail from 'lightgallery/plugins/thumbnail';
-import { ref, nextTick, onMounted } from 'vue';
+import { ref, nextTick, onMounted, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+
+
+const getData = `${import.meta.env.VITE_API_URL}/client/data-report-all`;
+const getSearchData = `${import.meta.env.VITE_API_URL}/client/search-data`;
+const route = useRoute();
+const router = useRouter();
+const keyword = ref(route.query.search || '');
+const isSearching = ref(!!keyword.value);
+const loadData = ref([]);
+const countData = ref(0);
+const isModalOpen = ref(false);
+const galleryRef = ref(null);
+const itemData = ref({ images: [] });
 
 function formatDate(dateStr) {
     const date = new Date(dateStr);
@@ -126,15 +142,6 @@ function formatDate(dateStr) {
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
 }
-
-const getDataToday = `${import.meta.env.VITE_API_URL}/client/data-report-all`;
-const loadData = ref([]);
-const countData = ref(0);
-const isModalOpen = ref(false);
-const galleryRef = ref(null);
-const itemData = ref({
-    images: [],
-});
 
 function openModal(item) {
     itemData.value = {
@@ -158,14 +165,55 @@ function closeModal() {
     isModalOpen.value = false;
 };
 
-onMounted(async () => {
+async function getDataAll() {
     try {
-        const res = await axios.get(getDataToday);
+        const res = await axios.get(getData);
         loadData.value = res.data.data;
         countData.value = loadData.value.length;
     } catch (error) {
         console.error(error);
     }
+}
+
+// Tìm kiếm
+async function searchData(keywordValue) {
+    try {
+        const trimmed = keywordValue.trim();
+        isSearching.value = !!trimmed;
+        if (!trimmed) {
+            await getDataAll();
+            isSearching.value = false;
+            return;
+        }
+        isSearching.value = true;
+        const res = await axios.get(`${getSearchData}?search=${encodeURIComponent(trimmed)}`);
+        loadData.value = res.data.data;
+        countData.value = loadData.value.length;
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+watch(keyword, (newVal) => {
+    searchData(newVal);
+});
+
+watch(
+    () => route.query.search,
+    (newSearch) => {
+        keyword.value = newSearch || '';
+        searchData(keyword.value);
+    },
+    { immediate: true }
+);
+
+async function handleSearch() {
+    const query = keyword.value.trim() ? { search: keyword.value.trim() } : {};
+    await router.push({ path: '/scammer', query });
+}
+
+onMounted(() => {
+    if (!keyword.value) getDataAll();
 });
 </script>
 <style></style>

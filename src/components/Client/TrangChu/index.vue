@@ -9,11 +9,11 @@
             Website lưu trữ dữ liệu lừa đảo trên mxh mà không chịu bất kỳ hạn chế
             seach của một thuật toán nào trên Facebook
         </p>
-        <form
+        <form @submit.prevent="handleSearch"
             class="max-w-[500px] w-full rounded-[16px] bg-[var(--bgColor3)] border border-[rgba(255,255,255,0.1)] mt-[48px] flex items-center p-[5px] mx-auto">
-            <input type="text" placeholder="Kiểm tra số tài khoản ngân hàng..."
+            <input type="text" placeholder="Kiểm tra số tài khoản ngân hàng..." v-model="keyword" @keyup.enter="handleSearch"
                 class="flex-1 bg-transparent border-none outline-none pl-[19px] text-[var(--textColor)]">
-            <button class="flex-shrink-0 btn">
+            <button class="flex-shrink-0 btn" @click="handleSearch">
                 <img src="../../../assets/img/search-icon.svg" alt="" class="block md:hidden">
                 <span class="hidden md:block">Tìm Kiếm</span>
             </button>
@@ -152,6 +152,7 @@ import axios from 'axios';
 import lightGallery from 'lightgallery';
 import lgThumbnail from 'lightgallery/plugins/thumbnail';
 import { ref, onMounted, nextTick } from 'vue';
+import { useRouter } from 'vue-router';
 
 const today = new Date().toLocaleDateString('vi-VN', {
     day: '2-digit',
@@ -227,6 +228,19 @@ const warningList = [
 
 function toggleWarning(index) {
     activeWarningIndex.value = activeWarningIndex.value === index ? null : index
+}
+
+const router = useRouter();
+const keyword = ref('');
+
+function handleSearch() {
+    const kw = keyword.value.trim();
+    if (!kw) return;
+
+    router.push({ 
+        path: '/scammer', 
+        query: { search: kw }
+    });
 }
 </script>
 <style></style>
