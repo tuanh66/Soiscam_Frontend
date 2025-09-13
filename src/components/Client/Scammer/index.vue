@@ -16,13 +16,13 @@
             <p class="text-[var(--subTextColor)] mt-2">CÓ {{ countData }} CẢNH BÁO</p>
         </div>
         <div class="p-4 lg:py-[50px] lg:px-[30px]">
-            <div class="fui-loading-ring loading">
+            <div v-if="isLoading" class="fui-loading-ring loading">
                 <div></div>
                 <div></div>
                 <div></div>
                 <div></div>
             </div>
-            <ul v-if="loadData.length" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[20px]">
+            <ul v-else-if="loadData.length" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[20px]">
                 <li v-for="value in loadData" :key="value.id" @click="openModal(value)"
                     class="bg-[var(--bgColor3)] rounded-[16px] p-4 flex items-center gap-2 cursor-pointer select-none relative isolate overflow-hidden children:pointer-events-none hover:before:left-auto hover:before:right-0 hover:before:w-full before:content-[''] before:absolute before:top-0 before:left-0 before:right-auto before:h-full before:w-0 before:bg-white before:opacity-10 before:-z-10 before:transition-all before:duration-[400ms] before:ease-[cubic-bezier(0.165,0.84,0.44,1)]">
                     <img src="../../../assets/img/avatar-1.svg" alt="avatar" class="">
@@ -121,7 +121,7 @@ import lightGallery from 'lightgallery';
 import lgThumbnail from 'lightgallery/plugins/thumbnail';
 import { ref, nextTick, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-
+import debounce from 'lodash/debounce';
 
 const getData = `${import.meta.env.VITE_API_URL}/client/data-report-all`;
 const getSearchData = `${import.meta.env.VITE_API_URL}/client/search-data`;
@@ -129,6 +129,7 @@ const route = useRoute();
 const router = useRouter();
 const keyword = ref(route.query.search || '');
 const isSearching = ref(!!keyword.value);
+const isLoading = ref();
 const loadData = ref([]);
 const countData = ref(0);
 const isModalOpen = ref(false);
@@ -167,17 +168,21 @@ function closeModal() {
 
 async function getDataAll() {
     try {
+        isLoading.value = true;
         const res = await axios.get(getData);
         loadData.value = res.data.data;
         countData.value = loadData.value.length;
     } catch (error) {
         console.error(error);
+    } finally {
+        isLoading.value = false;
     }
 }
 
 // Tìm kiếm
 async function searchData(keywordValue) {
     try {
+        isLoading.value = true;
         const trimmed = keywordValue.trim();
         isSearching.value = !!trimmed;
         if (!trimmed) {
@@ -189,17 +194,22 @@ async function searchData(keywordValue) {
         const res = await axios.get(`${getSearchData}?search=${encodeURIComponent(trimmed)}`);
         loadData.value = res.data.data;
         countData.value = loadData.value.length;
-    } catch (err) {
-        console.error(err);
+    } catch (error) {
+        console.error(error);
+    } finally {
+        isLoading.value = false;
     }
 }
 
+const debouncedSearch = debounce((val) => {
+    searchData(val);
+}, 400);
+
 watch(keyword, (newVal) => {
-    searchData(newVal);
+    debouncedSearch(newVal);
 });
 
-watch(
-    () => route.query.search,
+watch(() => route.query.search,
     (newSearch) => {
         keyword.value = newSearch || '';
         searchData(keyword.value);
@@ -211,9 +221,5 @@ async function handleSearch() {
     const query = keyword.value.trim() ? { search: keyword.value.trim() } : {};
     await router.push({ path: '/scammer', query });
 }
-
-onMounted(() => {
-    if (!keyword.value) getDataAll();
-});
 </script>
 <style></style>

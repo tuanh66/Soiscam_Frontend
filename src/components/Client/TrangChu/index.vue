@@ -11,7 +11,8 @@
         </p>
         <form @submit.prevent="handleSearch"
             class="max-w-[500px] w-full rounded-[16px] bg-[var(--bgColor3)] border border-[rgba(255,255,255,0.1)] mt-[48px] flex items-center p-[5px] mx-auto">
-            <input type="text" placeholder="Kiểm tra số tài khoản ngân hàng..." v-model="keyword" @keyup.enter="handleSearch"
+            <input type="text" placeholder="Kiểm tra số tài khoản ngân hàng..." v-model="keyword"
+                @keyup.enter="handleSearch"
                 class="flex-1 bg-transparent border-none outline-none pl-[19px] text-[var(--textColor)]">
             <button class="flex-shrink-0 btn" @click="handleSearch">
                 <img src="../../../assets/img/search-icon.svg" alt="" class="block md:hidden">
@@ -28,13 +29,13 @@
             <p class="text-[var(--subTextColor)] mt-2">CÓ {{ countData }} CẢNH BÁO</p>
         </div>
         <div class="p-4 lg:py-[50px] lg:px-[30px]">
-            <div class="fui-loading-ring loading">
+            <div v-if="isLoading" class="fui-loading-ring loading">
                 <div></div>
                 <div></div>
                 <div></div>
                 <div></div>
             </div>
-            <ul v-if="loadData.length" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[20px]">
+            <ul v-else-if="loadData.length" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[20px]">
                 <li v-for="value in loadData" :key="value.id" @click="openModal(value)"
                     class="bg-[var(--bgColor3)] rounded-[16px] p-4 flex items-center gap-2 cursor-pointer select-none relative isolate overflow-hidden children:pointer-events-none hover:before:left-auto hover:before:right-0 hover:before:w-full before:content-[''] before:absolute before:top-0 before:left-0 before:right-auto before:h-full before:w-0 before:bg-white before:opacity-10 before:-z-10 before:transition-all before:duration-[400ms] before:ease-[cubic-bezier(0.165,0.84,0.44,1)]">
                     <img src="../../../assets/img/avatar-1.svg" alt="avatar" class="">
@@ -169,6 +170,7 @@ function formatDate(dateStr) {
 }
 
 const getDataToday = `${import.meta.env.VITE_API_URL}/client/data-report-today`;
+const isLoading = ref(true);
 const loadData = ref([]);
 const countData = ref(0);
 const isModalOpen = ref(false);
@@ -201,11 +203,14 @@ function closeModal() {
 
 onMounted(async () => {
     try {
+        isLoading.value = true;
         const res = await axios.get(getDataToday);
         loadData.value = res.data.data;
         countData.value = loadData.value.length;
     } catch (error) {
         console.error(error);
+    } finally {
+        isLoading.value = false;
     }
 });
 
@@ -237,8 +242,8 @@ function handleSearch() {
     const kw = keyword.value.trim();
     if (!kw) return;
 
-    router.push({ 
-        path: '/scammer', 
+    router.push({
+        path: '/scammer',
         query: { search: kw }
     });
 }
