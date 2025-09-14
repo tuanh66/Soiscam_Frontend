@@ -1,5 +1,5 @@
 <template>
-    <div id="fui-toast"></div> 
+    <div id="fui-toast"></div>
     <form id="form-login" action="" class="flex flex-col justify-center text-center mx-auto pt-30 px-4 w-90">
         <!-- <input type="hidden" name="_token" value=""> -->
         <div class="flex items-end justify-center gap-[6px] mt-[40px] mb-4">
@@ -35,16 +35,38 @@ import { onMounted, ref } from 'vue';
 import { Eye, EyeOff } from 'lucide-vue-next';
 
 const router = useRouter();
+const postLogin = `${import.meta.env.VITE_API_URL}/admin/login`;
+const checkToken = `${import.meta.env.VITE_API_URL}/admin/check-token`;
 const showPassword = ref(false);
 const login = ref('');
 const password = ref('');
 
-onMounted(() => {
+onMounted(async () => {
     // Kiểm tra token khi load trang login
+    // const token = localStorage.getItem("token");
+    // if (token) {
+    //     router.push("/admin/danh-sach-scammer");
+    //     return; // không cho chạy tiếp form nữa
+    // }
+
     const token = localStorage.getItem("token");
     if (token) {
-        router.push("/admin/danh-sach-scammer");
-        return; // không cho chạy tiếp form nữa
+        try {
+            const res = await axios.get(checkToken, {
+                headers: {
+                    Authorization: "Bearer " + token,
+                },
+            });
+
+            if (res.data.status) {
+                router.push("/admin/danh-sach-scammer");
+                return;
+            } else {
+                localStorage.removeItem("token");
+            }
+        } catch (error) {
+            localStorage.removeItem("token");
+        }
     }
 
     Validator({
@@ -57,7 +79,7 @@ onMounted(() => {
         ],
         resetOnSubmit: false,
         onSubmit: async () => {
-            const res = await axios.post(`${import.meta.env.VITE_API_URL}/admin/login`, {
+            const res = await axios.post(postLogin, {
                 user: login.value,
                 password: password.value,
             });
