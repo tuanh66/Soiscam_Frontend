@@ -8,7 +8,7 @@
     <div class="hidden lg:block w-[530px] h-[530px] rounded-full blur-[250px] bg-[#1B1D30] fixed bottom-1 right-[-57px] -z-1 opacity-60"></div>
     <!--end  IMAGES FIXED-->
     <TopClient></TopClient>
-    <div v-if="!isHideContainer" class="mt-[var(--headerHeight)] px-4 max-w-full pt-[26px] lg:mt-0 lg:px-0 lg:pt-0 lg:max-w-[1100px] lg:w-full lg:mx-auto pb-25">
+    <div v-if="!isHideContainer" class="px-4 max-w-full pt-[26px] lg:mt-0 lg:px-0 lg:pt-0 lg:max-w-[1100px] lg:w-full lg:mx-auto pb-25">
         <router-view />
     </div>
     <router-view v-else />

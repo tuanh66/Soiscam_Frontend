@@ -1,5 +1,5 @@
 <template>
-    <section class="mt-[134px] lg:mt-[40px] mx-[6%] pb-[100px]">
+    <section class="mt-[40px] lg:mt-[134px] mx-[6%] pb-[100px]">
         <div class="text-center">
             <h2 class="title">Ý tưởng web soiscam</h2>
         </div>

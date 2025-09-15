@@ -4,9 +4,9 @@
             <h2 class="font-bold text-[24px]">Danh sách scammer</h2>
             <p class="text-[16px] text-[var(--subTextColor)] font-semibold">(Có {{ countData }} đơn tố cáo)</p>
         </div>
-        <form
+        <form @submit.prevent="handleSearch"
             class="max-w-[500px] w-full mr-0 mt-0 rounded-[16px] bg-[var(--bgColor3)] border border-[rgba(255,255,255,0.1)] flex items-center p-[5px] mx-auto">
-            <input type="text" placeholder="Kiểm tra số tài khoản ngân hàng..."
+            <input type="search" placeholder="Kiểm tra số tài khoản ngân hàng..." v-model="keyword"
                 class="flex-1 bg-transparent border-none outline-none pl-[19px] text-[var(--textColor)]">
             <button class="btn">
                 <img src="../../../assets/img/search-icon.svg" alt="" class="block md:hidden">
@@ -15,7 +15,17 @@
         </form>
     </div>
     <div class="mt-[50px] text-[14px]">
-        <table class="w-full overflow-hidden rounded-[16px] border-spacing-0">
+        <table class="w-full overflow-hidden rounded-t-[16px] border-spacing-0 table-fixed">
+            <colgroup>
+                <col style="width: 5%">
+                <col style="width: 15%">
+                <col style="width: 10%">
+                <col style="width: 10%">
+                <col style="width: 10%">
+                <col style="width: 10%">
+                <col style="width: 10%">
+                <col style="width: 10%">
+            </colgroup>
             <thead class="bg-[var(--bgColor3)]">
                 <tr>
                     <th class="p-[16px] text-left">id</th>
@@ -28,37 +38,66 @@
                     <th class="p-[16px] text-left"></th>
                 </tr>
             </thead>
-            <tbody v-if="loadData.length > 0">
-                <tr v-for="value in loadData" :key="value.id" class="dashboard__table-bodyItem">
-                    <td class="align-middle p-[16px]">#{{ value.id }}</td>
-                    <td class="align-middle p-[16px]">{{ value.nameScammer }}</td>
-                    <td class="align-middle p-[16px]">{{ value.bankNumber }}</td>
-                    <td class="align-middle p-[16px]">{{ value.bankName }}</td>
-                    <td class="align-middle p-[16px]">{{ value.phoneScammer }}</td>
-                    <td class="align-middle p-[16px]">{{ value.nameSender }}</td>
-                    <td class="align-middle p-[16px]">{{ formatDate(value.created_at) }}</td>
-                    <td class="align-middle p-[16px] flex items-center gap-[12px]">
-                        <span @click="openModal(value)" class="cursor-pointer text-[18px]">
-                            <i class="fa-solid fa-eye"></i>
-                        </span>
-                        <span @click="deleteReport(value.id)" class="cursor-pointer text-[18px] text-[var(--redColor)]">
-                            <i class="fa-solid fa-trash"></i>
-                        </span>
-                    </td>
-                </tr>
-
-            </tbody>
-            <tbody v-else>
-                <tr>
-                    <td colspan="8" class="relative h-[590px]">
-                        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-50 text-center">
-                            <img src="../../../assets/img/not-found.svg" class="h-[200px]" />
-                            <span class="text-center">Không có dữ liệu</span>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
         </table>
+        <div class="max-h-[615px] overflow-y-auto">
+            <table class="w-full border-spacing-0 table-fixed">
+                <colgroup>
+                    <col style="width: 5%">
+                    <col style="width: 15%">
+                    <col style="width: 10%">
+                    <col style="width: 10%">
+                    <col style="width: 10%">
+                    <col style="width: 10%">
+                    <col style="width: 10%">
+                    <col style="width: 10%">
+                </colgroup>
+                <tbody v-if="isLoading">
+                    <tr>
+                        <td colspan="8" class="relative h-[590px]">
+                            <div class="fui-loading-ring loading absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+                <tbody v-else-if="loadData.length">
+                    <tr v-for="value in loadData" :key="value.id" class="dashboard__table-bodyItem">
+                        <td class="align-middle p-[16px]">#{{ value.id }}</td>
+                        <td class="align-middle p-[16px]">{{ value.nameScammer }}</td>
+                        <td class="align-middle p-[16px]">{{ value.bankNumber }}</td>
+                        <td class="align-middle p-[16px]">{{ value.bankName }}</td>
+                        <td class="align-middle p-[16px]">{{ value.phoneScammer }}</td>
+                        <td class="align-middle p-[16px]">{{ value.nameSender }}</td>
+                        <td class="align-middle p-[16px]">{{ formatDate(value.created_at) }}</td>
+                        <td class="align-middle p-[16px] flex items-center gap-[12px]">
+                            <span @click="openModal(value)" class="cursor-pointer text-[18px]">
+                                <i class="fa-solid fa-eye"></i>
+                            </span>
+                            <span @click="deleteReport(value.id)"
+                                class="cursor-pointer text-[18px] text-[var(--redColor)]">
+                                <i class="fa-solid fa-trash"></i>
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+                <tbody v-else>
+                    <tr>
+                        <td colspan="8" class="relative h-[590px]">
+                            <div
+                                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-50 text-center">
+                                <img src="../../../assets/img/not-found.svg" class="h-[200px]" />
+                                <span class="text-center">
+                                    {{ isSearching && !loadData.length ? 'Không có dữ liệu bạn cần tìm' : 'Không có dữ liệu' }}
+                                </span>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
     <section v-if="isModalOpen"
         class="fixed top-0 right-0 left-0 bottom-0 h-[100vh] flex justify-center items-center isolate z-50 animate-fadeIn">
@@ -136,8 +175,10 @@
 import axios from 'axios';
 import lightGallery from 'lightgallery';
 import lgThumbnail from 'lightgallery/plugins/thumbnail';
-import { ref, onMounted, nextTick } from 'vue';
+import { ref, onMounted, nextTick, watch } from 'vue';
 import Swal from 'sweetalert2';
+import { useRoute, useRouter } from 'vue-router';
+import { debounce } from 'lodash';
 
 function formatDate(dateStr) {
     const date = new Date(dateStr)
@@ -147,6 +188,13 @@ function formatDate(dateStr) {
     return `${day}/${month}/${year}`
 }
 
+const getData = `${import.meta.env.VITE_API_URL}/admin/data-report-approve-1`;
+const getSearchData = `${import.meta.env.VITE_API_URL}/admin/search-approve-1`;
+const route = useRoute();
+const router = useRouter();
+const keyword = ref(route.query.search || '');
+const isSearching = ref(!!keyword.value);
+const isLoading = ref(false);
 const loadData = ref([]);
 const countData = ref(0)
 const isModalOpen = ref(false);
@@ -177,10 +225,13 @@ function closeModal() {
     isModalOpen.value = false;
 };
 
-onMounted(async () => {
+async function getDataApprove1() {
     try {
+        isLoading.value = true;
         const token = localStorage.getItem("token");
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/admin/data-report-approve-1`, {
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        const res = await axios.get(getData, {
             headers: {
                 Authorization: "Bearer " + token,
             }
@@ -188,9 +239,59 @@ onMounted(async () => {
         loadData.value = res.data.data;
         countData.value = loadData.value.length;
     } catch (error) {
-        console.error(error)
+        console.error(error);
+    } finally {
+        isLoading.value = false;
     }
+}
+
+async function searchData(keywordValue) {
+    try {
+        isLoading.value = true;
+        const trimmed = keywordValue.trim();
+        isSearching.value = !!trimmed;
+        if (!trimmed) {
+            await getDataApprove1();
+            isSearching.value = false;
+            return;
+        }
+        isSearching.value = true;
+        const token = localStorage.getItem("token");
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        const res = await axios.get(`${getSearchData}?search=${encodeURIComponent(trimmed)}`, {
+            headers: {
+                Authorization: "Bearer " + token
+            }
+        });
+        loadData.value = res.data.data;
+        countData.value = loadData.value.length;
+    } catch (error) {
+        console.log(error);
+    } finally {
+        isLoading.value = false;
+    }
+}
+
+const debouncedSearch = debounce((val) => {
+    searchData(val);
+}, 400);
+
+watch(keyword, (newVal) => {
+    debouncedSearch(newVal);
 });
+
+watch(() => route.query.search,
+    (newSearch) => {
+        keyword.value = newSearch || '';
+        searchData(keyword.value);
+    },
+    { immediate: true }
+);
+
+async function handleSearch() {
+    const query = keyword.value.trim() ? { search: keyword.value.trim() } : {};
+    router.replace({ query });
+}
 
 async function deleteReport(id) {
     const result = await Swal.fire({
@@ -222,4 +323,17 @@ async function deleteReport(id) {
     }
 };
 </script>
-<style></style>
+<style>
+.max-h-\[615px\]::-webkit-scrollbar {
+    width: 3px;
+}
+
+.max-h-\[615px\]::-webkit-scrollbar-thumb {
+    background: #fff;
+    border-radius: 5px;
+}
+
+.max-h-\[615px\]::-webkit-scrollbar-track {
+    background: transparent;
+}
+</style>

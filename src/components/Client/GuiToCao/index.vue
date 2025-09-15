@@ -1,5 +1,5 @@
 <template>
-    <section class="mt-[var(--headerHeight)] pt-4 mx-4 lg:mx-[6%] lg:mt-4 flex items-center gap-[4px]">
+    <section class="pt-4 mx-4 lg:mx-[6%] lg:mt-4 flex items-center gap-[4px]">
         <RouterLink to="/"
             class="hover:text-[var(--textColor)] text-[var(--subTextColor)] text-[14px] transition duration-200 ease-linear">
             Trang Chủ

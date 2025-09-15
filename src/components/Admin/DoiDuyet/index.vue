@@ -149,6 +149,7 @@ function formatDate(dateStr) {
     return `${day}/${month}/${year}`
 };
 
+const getSearchData = `${import.meta.env.VITE_API_URL}/admin/search-approve-0`;
 const loadData = ref([]);
 const countData = ref(0);
 const isModalOpen = ref(false);

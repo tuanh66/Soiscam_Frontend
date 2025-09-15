@@ -170,7 +170,7 @@ function formatDate(dateStr) {
 }
 
 const getDataToday = `${import.meta.env.VITE_API_URL}/client/data-report-today`;
-const isLoading = ref(true);
+const isLoading = ref();
 const loadData = ref([]);
 const countData = ref(0);
 const isModalOpen = ref(false);
