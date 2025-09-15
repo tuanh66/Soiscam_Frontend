@@ -140,6 +140,7 @@ import lightGallery from 'lightgallery';
 import lgThumbnail from 'lightgallery/plugins/thumbnail';
 import { ref, onMounted, nextTick } from 'vue';
 import Swal from 'sweetalert2';
+import { useRoute, useRouter } from 'vue-router';
 
 function formatDate(dateStr) {
     const date = new Date(dateStr)
@@ -149,7 +150,13 @@ function formatDate(dateStr) {
     return `${day}/${month}/${year}`
 };
 
+const getData = `${import.meta.env.VITE_API_URL}/admin/data-report-approve-0`;
 const getSearchData = `${import.meta.env.VITE_API_URL}/admin/search-approve-0`;
+const route = useRoute();
+const router = useRouter();
+const keyword = route.query.keyword || '';
+const isSearching = ref(!!keyword.value);
+const isLoading = ref(false);
 const loadData = ref([]);
 const countData = ref(0);
 const isModalOpen = ref(false);
@@ -180,19 +187,27 @@ function closeModal() {
     isModalOpen.value = false;
 };
 
-onMounted(async () => {
+async function getDataApprove0() {
     try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/admin/data-report-approve-0`, {
+        isLoading.value = true;
+        const token = localStorage.getItem('token');
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        const res = await axios.get(getData, {
             headers: {
-                Authorization: "Bearer " + localStorage.getItem('token'),
+                Authorization: "Bearer " + token,
             }
         });
         loadData.value = res.data.data;
-        countData.value = loadData.value.length
+        countData.value = res.data.data.length;
     } catch (error) {
-        console.error(error)
+        console.error(error);
+    } finally {
+        isLoading.value = false;
     }
-});
+}
+
+async 
 
 async function approveReport(id, approve) {
     try {
