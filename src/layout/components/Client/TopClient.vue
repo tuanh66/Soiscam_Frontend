@@ -1,6 +1,8 @@
 <template>
-    <header
-        class="fixed top-0 left-0 right-0 m-0 rounded-none justify-between px-4 z-40 lg:mt-[25px] lg:mx-[6%] bg-[var(--bgColor2)] lg:rounded-[16px] flex lg:justify-center items-center h-[var(--headerHeight)] lg:px-[40px] lg:py-[16px] lg:relative">
+    <header ref="headerRef" :class="[
+        'header top-0 left-0 right-0 m-0 justify-between px-4 z-40 lg:mt-[25px] lg:mx-[6%] bg-[var(--bgColor2)] lg:rounded-[16px] flex lg:justify-center items-center h-[var(--headerHeight)] lg:px-[40px] lg:py-[16px]',
+        isFixed ? 'fixed' : 'lg:relative'
+    ]">
         <RouterLink to="/" class="flex items-end gap-[6px] absolute lg:left-[40px] left-4">
             <img src="../../../assets/img/logo.svg" alt="">
             <span class="text-[18px] font-bold text-[var(--textColor)]">Soi scam</span>
@@ -30,7 +32,8 @@
                     :class="['font-medium transition-all duration-200 ease-linear', menuHeaderActive('/gioi-thieu') ? 'text-[var(--textColor)]' : 'text-[var(--subTextColor)] hover:text-[var(--textColor)] hover:font-semibold']">
                     Giới Thiệu</RouterLink>
             </li>
-            <RouterLink to="/gui-to-cao" @click="isOpenHeader = false" class="static w-1/2 text-center right-10 btn">Gửi Tố Cáo</RouterLink>
+            <RouterLink to="/gui-to-cao" @click="isOpenHeader = false" class="static w-1/2 text-center right-10 btn">Gửi
+                Tố Cáo</RouterLink>
         </ul>
         <ul class="hidden lg:flex items-center gap-10">
             <li>
@@ -53,10 +56,34 @@
     </header>
 </template>
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { useRoute } from 'vue-router';
 const route = useRoute();
 const menuHeaderActive = (path) => route.path === path;
 const isOpenHeader = ref(false);
+const isFixed = ref(false);
+const headerRef = ref(null);
+
+const handleScroll = () => {
+    if (!headerRef.value) return;
+    const headerHeight = headerRef.value.offsetHeight;
+    const marginTopHeader = parseFloat(getComputedStyle(headerRef.value).marginTop);
+    const totalHeaderHeight = headerHeight + marginTopHeader;
+    if (window.scrollY > totalHeaderHeight) {
+        isFixed.value = true;
+        document.body.classList.add("active");
+    } else {
+        isFixed.value = false;
+        document.body.classList.remove("active");
+    }
+};
+
+onMounted(() => {
+    window.addEventListener("scroll", handleScroll);
+});
+
+onUnmounted(() => {
+    window.removeEventListener("scroll", handleScroll);
+});
 </script>
 <style></style>
