@@ -50,16 +50,15 @@ body {
 }
 
 /* STYLE MODAL */
-.modal__body::-webkit-scrollbar {
-  /*thu hẹp thanh kéo lên kéo xuống*/
+.modal__body, .max-h-\[calc\(100vh-312px\)\]::-webkit-scrollbar {
   width: 4px;
 }
 
-.modal__body::-webkit-scrollbar-track {
+.modal__body, .max-h-\[calc\(100vh-312px\)\]::-webkit-scrollbar-track {
   box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
 }
 
-.modal__body::-webkit-scrollbar-thumb {
+.modal__body, .max-h-\[calc\(100vh-312px\)\]::-webkit-scrollbar-thumb {
   background-color: var(--subTextColor);
 }
 

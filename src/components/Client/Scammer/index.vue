@@ -1,6 +1,6 @@
 <template>
     <form @submit.prevent="handleSearch"
-        class="max-w-[500px] w-full rounded-[16px] bg-[var(--bgColor3)] border border-[rgba(255,255,255,0.1)] mt-15 flex items-center p-[5px] mx-auto">
+        class="max-w-[500px] w-full rounded-[16px] bg-[var(--bgColor3)] border border-[rgba(255,255,255,0.1)] mt-[34px] lg:mt-15 flex items-center p-[5px] mx-auto">
         <input type="text" placeholder="Kiểm tra số tài khoản ngân hàng..." v-model="keyword"
             class="flex-1 bg-transparent border-none outline-none pl-[19px] text-[var(--textColor)]">
         <button class="btn">

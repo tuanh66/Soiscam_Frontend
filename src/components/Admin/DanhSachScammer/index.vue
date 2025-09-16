@@ -22,7 +22,7 @@
                 <col style="width: 10%">
                 <col style="width: 10%">
                 <col style="width: 10%">
-                <col style="width: 10%">
+                <col style="width: 15%">
                 <col style="width: 10%">
                 <col style="width: 10%">
             </colgroup>
@@ -39,7 +39,7 @@
                 </tr>
             </thead>
         </table>
-        <div class="max-h-[615px] overflow-y-auto">
+        <div class="max-h-[calc(100vh-312px)] overflow-y-auto">
             <table class="w-full border-spacing-0 table-fixed">
                 <colgroup>
                     <col style="width: 5%">
@@ -47,14 +47,15 @@
                     <col style="width: 10%">
                     <col style="width: 10%">
                     <col style="width: 10%">
-                    <col style="width: 10%">
+                    <col style="width: 15%">
                     <col style="width: 10%">
                     <col style="width: 10%">
                 </colgroup>
                 <tbody v-if="isLoading">
                     <tr>
-                        <td colspan="8" class="relative h-[590px]">
-                            <div class="fui-loading-ring loading absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                        <td colspan="8" class="relative h-[calc(100vh-327px)]">
+                            <div
+                                class="fui-loading-ring loading absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                                 <div></div>
                                 <div></div>
                                 <div></div>
@@ -85,7 +86,7 @@
                 </tbody>
                 <tbody v-else>
                     <tr>
-                        <td colspan="8" class="relative h-[590px]">
+                        <td colspan="8" class="relative h-[calc(100vh-327px)]">
                             <div
                                 class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-50 text-center">
                                 <img src="../../../assets/img/not-found.svg" class="h-[200px]" />
@@ -175,7 +176,7 @@
 import axios from 'axios';
 import lightGallery from 'lightgallery';
 import lgThumbnail from 'lightgallery/plugins/thumbnail';
-import { ref, onMounted, nextTick, watch } from 'vue';
+import { ref, nextTick, watch } from 'vue';
 import Swal from 'sweetalert2';
 import { useRoute, useRouter } from 'vue-router';
 import { debounce } from 'lodash';
@@ -190,6 +191,7 @@ function formatDate(dateStr) {
 
 const getData = `${import.meta.env.VITE_API_URL}/admin/data-report-approve-1`;
 const getSearchData = `${import.meta.env.VITE_API_URL}/admin/search-approve-1`;
+const postDeleteReport = `${import.meta.env.VITE_API_URL}/admin/delete-report`;
 const route = useRoute();
 const router = useRouter();
 const keyword = ref(route.query.search || '');
@@ -229,8 +231,6 @@ async function getDataApprove1() {
     try {
         isLoading.value = true;
         const token = localStorage.getItem("token");
-        await new Promise(resolve => setTimeout(resolve, 2000));
-
         const res = await axios.get(getData, {
             headers: {
                 Authorization: "Bearer " + token,
@@ -257,7 +257,6 @@ async function searchData(keywordValue) {
         }
         isSearching.value = true;
         const token = localStorage.getItem("token");
-        await new Promise(resolve => setTimeout(resolve, 2000));
         const res = await axios.get(`${getSearchData}?search=${encodeURIComponent(trimmed)}`, {
             headers: {
                 Authorization: "Bearer " + token
@@ -306,7 +305,7 @@ async function deleteReport(id) {
 
     if (result.isConfirmed) {
         try {
-            const res = await axios.post('http://127.0.0.1:8000/api/admin/delete-report', { id },
+            const res = await axios.post(postDeleteReport, { id },
                 {
                     headers: {
                         Authorization: "Bearer " + localStorage.getItem("token"),
@@ -323,17 +322,4 @@ async function deleteReport(id) {
     }
 };
 </script>
-<style>
-.max-h-\[615px\]::-webkit-scrollbar {
-    width: 3px;
-}
-
-.max-h-\[615px\]::-webkit-scrollbar-thumb {
-    background: #fff;
-    border-radius: 5px;
-}
-
-.max-h-\[615px\]::-webkit-scrollbar-track {
-    background: transparent;
-}
-</style>
+<style></style>
