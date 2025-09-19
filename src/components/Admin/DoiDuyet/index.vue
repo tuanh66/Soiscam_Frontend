@@ -351,7 +351,7 @@ async function deleteReport(id) {
         cancelButtonColor: '#ccc',
         confirmButtonText: 'Xoá',
         cancelButtonText: 'Huỷ'
-    })
+    });
 
     if (result.isConfirmed) {
         try {

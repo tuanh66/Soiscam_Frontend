@@ -121,7 +121,7 @@
 </template>
 <script setup>
 import axios from 'axios';
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 const endpointPost = `${import.meta.env.VITE_API_URL}/client/create-report-approve-0`;
 const uploadedImages = ref([]);
@@ -263,6 +263,7 @@ onMounted(() => {
             } catch (error) {
                 console.error(error);
                 FuiToast.error("Lỗi đơn!");
+
             }
         },
     });
