@@ -69,10 +69,10 @@ const handleScroll = () => {
     const headerHeight = headerRef.value.offsetHeight;
     const marginTopHeader = parseFloat(getComputedStyle(headerRef.value).marginTop);
     const totalHeaderHeight = headerHeight + marginTopHeader;
-    if (window.scrollY > totalHeaderHeight) {
+    if (window.scrollY > totalHeaderHeight + 50) {
         isFixed.value = true;
         document.body.classList.add("active");
-    } else {
+    } else if (window.scrollY < totalHeaderHeight - 10) {
         isFixed.value = false;
         document.body.classList.remove("active");
     }
