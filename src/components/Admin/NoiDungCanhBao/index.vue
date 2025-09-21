@@ -4,7 +4,7 @@
             <h2 class="font-bold text-[24px]">Danh sách cảnh báo</h2>
             <p class="text-[16px] text-[var(--subTextColor)] font-semibold">(Có {{ countData }} cảnh báo)</p>
         </div>
-        <button @click="openModal" class="btn ml-[20px]" type="submit">
+        <button @click="openModal" class="btn ml-[20px]">
             <span><i class="fa soloid fa-plus"></i></span>
             <span> Thêm cảnh báo</span>
         </button>
@@ -97,18 +97,21 @@
                     <img src="../../../assets/img/close-icon.svg" alt="close icon" class="pointer-events-none" />
                 </div>
             </div>
-            <form id="form-warning" class="h-[calc(100vh-54px)] py-[8px] px-[16px] md:h-[calc(380px-54px)] overflow-auto modal__body">
+            <form id="form-warning" @submit.prevent
+                class="h-[calc(100vh-54px)] py-[8px] px-[16px] md:h-[calc(380px-54px)] overflow-auto modal__body">
                 <div class="form__group flex flex-col flex-1 relative">
                     <label for="warningTitle" class="font-medium w-max">Tiêu đề cảnh báo <span
                             class="text-[var(--redColor)]">*</span></label>
-                    <textarea placeholder="Nhập tiêu đề cảnh báo" name="warningTitle" id="warningTitle"  @input="autoResize"
+                    <textarea placeholder="Nhập tiêu đề cảnh báo" name="warningTitle" id="warningTitle"
+                        @input="autoResize"
                         class="py-[10px] px-[12px] rounded-[8px] bg-[var(--bgColor3)] border-none outline-none text-[var(--textColor)] resize-none h-16 overflow-hidden mb-6"></textarea>
                     <p class="form-message text-[14px] text-[var(--redColor)] absolute top-0 right-0"></p>
                 </div>
                 <div class="form__group flex flex-col flex-1 relative">
                     <label for="warningContent" class="font-medium w-max">Nội dung cảnh báo cảnh báo <span
                             class="text-[var(--redColor)]">*</span></label>
-                    <textarea placeholder="Nhập nội dung cảnh báo" name="warningContent" id="warningContent" @input="autoResize"
+                    <textarea placeholder="Nhập nội dung cảnh báo" name="warningContent" id="warningContent"
+                        @input="autoResize"
                         class="py-[10px] px-[12px] rounded-[8px] bg-[var(--bgColor3)] border-none outline-none text-[var(--textColor)] resize-none h-16 overflow-hidden mb-6"></textarea>
                     <p class="form-message text-[14px] text-[var(--redColor)] absolute top-0 right-0"></p>
                 </div>
@@ -121,7 +124,7 @@
 import axios from 'axios';
 import { debounce } from 'lodash';
 import Swal from 'sweetalert2';
-import { onMounted, ref, watch } from 'vue';
+import { nextTick, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 const getData = `${import.meta.env.VITE_API_URL}/client/data-warning`;
@@ -217,7 +220,6 @@ async function deleteWarning(id) {
                 }
             );
             Swal.fire('Đã xoá thành công!', res.data.message, 'success')
-
             loadData.value = loadData.value.filter(item => item.id !== id)
             countData.value = loadData.value.length
         } catch (err) {
@@ -228,6 +230,33 @@ async function deleteWarning(id) {
 
 function openModal() {
     isModalOpen.value = true;
+    nextTick(() => {
+        Validator({
+            form: "#form-warning",
+            formGroupSelector: ".form__group",
+            errorSelector: ".form-message",
+            rules: [
+                Validator.isRequired("#warningTitle", "Không được để trống"),
+                Validator.isRequired("#warningContent", "Không được để trống"),
+            ],
+            resetOnSubmit: true,
+            onSubmit: async function (data) {
+                try {
+                    const res = await axios.post(postCreateWarning, data, {
+                        headers: {
+                            Authorization: "Bearer " + localStorage.getItem("token"),
+                        }
+                    });
+                    FuiToast.success("Tạo thành công");
+                    await getDataWarning();
+                    countData.value = loadData.value.length;
+                    closeModal();
+                } catch (error) {
+                    FuiToast.error("Lỗi");
+                }
+            }
+        });
+    });
 };
 
 function closeModal() {
@@ -235,21 +264,8 @@ function closeModal() {
 };
 
 function autoResize(e) {
-  e.target.style.height = "auto";
-  e.target.style.height = e.target.scrollHeight + "px";
+    e.target.style.height = "auto";
+    e.target.style.height = e.target.scrollHeight + "px";
 }
-
-onMounted(() => {
-    Validator({
-        form: "#form-warning",
-        formGroupSelector: ".form__group",
-        errorSelector: ".form-message",
-        rules: [
-            Validator.isRequired("#warningTitle", "Không được để trống"),
-            Validator.isRequired("#warningContent", "Không được để trống"),
-        ],
-        resetOnSubmit: true,
-    });
-});
 </script>
 <style></style>

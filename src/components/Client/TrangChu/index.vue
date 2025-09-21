@@ -58,18 +58,18 @@
     <section class="mt-[56px] lg:mt-15">
         <h2 class="text-center title">Một số kiểu lừa đảo online thường gặp</h2>
         <ul class="mt-[30px] flex flex-col gap-5">
-            <li v-for="(item, index) in warningList" :key="index" @click="toggleWarning(index)"
+            <li v-for="(value, index) in loadWarning" :key="index" @click="toggleWarning(index)"
                 class="bg-[var(--bgColor3)] rounded-[16px] p-4 backdrop-blur-[70px]">
                 <div class="flex items-center cursor-pointer gap-2 children:pointer-events-none">
                     <span class="w-6 h-6 flex-shrink-0 transition-transition duration-200 ease-linear"
                         :class="{ 'rotate-90': activeWarningIndex === index }">
                         <img src="../../../assets/img/arrow-right.svg" alt="">
                     </span>
-                    <h4 class="font-normal">{{ item.title }}</h4>
+                    <h4 class="font-normal">{{ value.warningTitle }}</h4>
                 </div>
                 <div v-if="activeWarningIndex === index" :class="'mt-2 h-auto'"
                     class="ml-[32px] text-[var(--subTextColor)] h-0 overflow-hidden transition duration-200 ease-linear">
-                    {{ item.description }}
+                    {{ value.warningContent }}
                 </div>
             </li>
         </ul>
@@ -79,7 +79,7 @@
 </template>
 <script setup>
 import axios from 'axios';
-import { ref, onMounted, nextTick } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import baseModal from '../../Modal/index.vue'
 
@@ -98,51 +98,50 @@ function formatDate(dateStr) {
 }
 
 const getDataToday = `${import.meta.env.VITE_API_URL}/client/data-report-today`;
+const getDataWarning = `${import.meta.env.VITE_API_URL}/client/data-warning`;
 const isLoading = ref();
 const loadData = ref([]);
 const countData = ref(0);
 const modalRef = ref(null);
+const activeWarningIndex = ref(null)
+const loadWarning = ref([]);
+const router = useRouter();
+const keyword = ref('');
 
 function openModal(item) {
     modalRef.value.open(item);
 }
 
-onMounted(async () => {
+function toggleWarning(index) {
+    activeWarningIndex.value = activeWarningIndex.value === index ? null : index
+}
+
+async function getToday() {
     try {
         isLoading.value = true;
         const res = await axios.get(getDataToday);
         loadData.value = res.data.data;
         countData.value = loadData.value.length;
     } catch (error) {
-        console.error(error);
+        console.log(error);
     } finally {
         isLoading.value = false;
     }
-});
+} 
 
-const activeWarningIndex = ref(null)
-
-const warningList = [
-    {
-        title: 'Giả mạo tên miền, website',
-        description: 'Bọn lừa đảo mua 1 tên miền gần giống (chỉ lệch 1 vài ký tự) sau đó gắn vào web fake có giao diện giống hệt để lừa đảo'
-    },
-    {
-        title: 'Lừa đảo đầu tư tiền ảo',
-        description: 'Chúng tạo ra các sàn giao dịch ảo...'
-    },
-    {
-        title: 'Mạo danh người nổi tiếng',
-        description: 'Giả danh người nổi tiếng để bán hàng...'
+async function getWarning() {
+    try {
+        const res = await axios.get(getDataWarning);
+        loadWarning.value = res.data.data;
+    } catch (error) {
+        console.log(error);
     }
-]
-
-function toggleWarning(index) {
-    activeWarningIndex.value = activeWarningIndex.value === index ? null : index
 }
 
-const router = useRouter();
-const keyword = ref('');
+onMounted(async () => {
+    getToday();
+    getWarning();
+});
 
 function handleSearch() {
     const kw = keyword.value.trim();
